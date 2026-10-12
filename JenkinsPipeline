@@ -1,0 +1,32 @@
+pipeline{
+    agent any
+    
+    stages{
+        stage('checkout'){
+            steps{
+                git 'https://github.com/devkunaljadhav/dockerproject.git'
+            }
+        }
+        stage('build'){
+            steps{
+                sh 'docker build -t $image .'
+            }
+        }
+        stage('tagging'){
+            steps{
+                sh 'docker tag $image $repo'
+            }
+        }
+        stage('push'){
+            steps{
+                sh 'docker login -u kunaljadhav1625 -p $password'
+                sh 'docker push $repo'
+            }
+        }
+        stage('deploy'){
+            steps{
+                sh 'docker stack deploy -c docker-compose.yml bank'
+            }
+        }
+    }
+}

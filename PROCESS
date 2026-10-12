@@ -1,0 +1,153 @@
+DOCKER PROJECT:
+
+
+yum install docker -y
+systemctl start docker
+systemctl status docker
+
+FROM ubuntu
+RUN apt-get update -y
+RUN apt-get install apache2 -y
+COPY index.html /var/www/html/
+CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
+
+
+
+DOCKER FILE	: To create image by automation.
+DOCKER COMPOSE	: To create multiple containers on single server.
+DOCKER SWARM	: To create single containers on Multiple server.
+DOCKER STACK	: Docker swarm + Docker compose
+
+1. CREATE 3 SERVERS T2.MEDIUM AND INSTALL DOCKER ON ALL OF THEM & CREATE CLUSTER OF IT
+
+yum install docker -y
+systemctl start docker
+systemctl status docker
+docker swarm init 
+docker node ls
+
+
+2. INSTALLING JENKINS (MASTER)
+
+#STEP-1: INSTALLING GIT JAVA-1.8.0 MAVEN 
+yum install git java-1.8.0-openjdk maven -y
+
+#STEP-2: GETTING THE REPO (jenkins.io --> download -- > redhat)
+sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+
+#STEP-3: DOWNLOAD JAVA11 AND JENKINS
+amazon-linux-extras install java-openjdk11 -y
+yum install jenkins -y
+update-alternatives --config java
+
+#STEP-4: RESTARTING JENKINS (when we download service it will on stopped state)
+systemctl start jenkins.service
+systemctl status jenkins.service
+
+
+3. CREATE CUSTOM IMAGES AND PUSH TO DOCKERHUB WITH TAGS
+
+DOCKER FILE:
+FROM ubuntu
+RUN apt-get update -y
+RUN apt-get install apache2 -y
+COPY index.html /var/www/html/
+CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
+
+INDEX.HTML:
+
+
+PIPELINE:
+pipeline {
+    agent any
+    
+    stages {
+        stage('checkout') {
+            steps {
+                git 'https://github.com/ReyazShaik/dockerproject.git'
+            }
+        }
+        stage('build') {
+            steps {
+                sh 'docker build -t $image .'
+            }
+        }
+        stage('tag') {
+            steps {
+                sh 'docker tag $image $repo'
+            }
+        }
+        stage('push') {
+            steps {
+                sh 'docker login -u reyadocker -p $password'
+                sh 'docker push $repo'
+            }
+        }
+        stage('deploy') {
+            steps {
+                sh 'docker stack deploy bank -c docker-compose.yml'
+            }
+        }
+    }
+}
+
+4. GIVE PERMISSIONS
+
+chmod 777 /var/run/docker.sock
+systemctl daemon-reload
+systemctl restart docker.service
+
+
+5. WRITE COMPOSE FILE AND PUSH TO GITHUB
+version: '3.8'
+services:
+  internetbanking:
+    image: reyadocker/internetbankingrepo:latest
+    ports:
+      - "81:80"
+    deploy:
+      replicas: 3
+    volumes:
+      - /var/lib/internetbanking
+  mobilebanking:
+    image: reyadocker/mobilebankingrepo:latest
+    ports:
+      - "82:80"
+    deploy:
+      replicas: 3
+    volumes:
+      - /var/lib/mobilebanking
+  insurance:
+    image: reyadocker/insurancerepo:latest
+    ports:
+      - "83:80"
+    deploy:
+      replicas: 3
+    volumes:
+      - /var/lib/insurance
+  loan:
+    image: reyadocker/loanrepo:latest
+    ports:
+      - "84:80"
+    deploy:
+      replicas: 3
+    volumes:
+      - /var/lib/loan
+
+COMMAND:
+TO DEPLOY : docker stack deploy --compose-file docker-compose.yml stack_name
+TO LIST : docker stack ls
+TO GET CONTAINERS OF A STACK : docker stack ps stack_name
+TO GET SERVICES OF A STACK: docker stack services stack_name
+TO DELETE A STACK: docker stack rm stack_name
+
+
+PORTAINER: its a GUI for managing containers
+
+SETUP:
+Must have swarm mode and all ports enable with docker engine
+curl -L https://downloads.portainer.io/ce2-16/portainer-agent-stack.yml -o portainer-agent-stack.yml
+docker stack deploy -c portainer-agent-stack.yml portainer
+docker stack ls
+public-ip of swarm master:9000

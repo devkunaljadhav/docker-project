@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  internetbanking:
+    image: kunaljadhav1625/ib-image:latest
+    ports:
+      - "81:80"
+    deploy:
+      replicas: 3
+    volumes:
+      - /var/lib/internetbanking
+  mobilebanking:
+    image: kunaljadhav1625/mb-image:latest
+    ports:
+      - "82:80"
+    deploy:
+      replicas: 3
+    volumes:
+      - /var/lib/mobilebanking
+  insurance:
+    image: kunaljadhav1625/insurance-image:latest
+    ports:
+      - "83:80"
+    deploy:
+      replicas: 3
+    volumes:
+      - /var/lib/insurance
+  loan:
+    image: kunaljadhav1625/loan-image:latest
+    ports:
+      - "84:80"
+    deploy:
+      replicas: 3
+    volumes:
+      - /var/lib/loan
