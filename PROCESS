@@ -103,7 +103,7 @@ systemctl restart docker.service
 version: '3.8'
 services:
   internetbanking:
-    image: reyadocker/internetbankingrepo:latest
+    image: kunaljadhav1625/ib-image:latest
     ports:
       - "81:80"
     deploy:
@@ -111,7 +111,7 @@ services:
     volumes:
       - /var/lib/internetbanking
   mobilebanking:
-    image: reyadocker/mobilebankingrepo:latest
+    image: kunaljadhav1625/mb-image:latest
     ports:
       - "82:80"
     deploy:
@@ -119,7 +119,7 @@ services:
     volumes:
       - /var/lib/mobilebanking
   insurance:
-    image: reyadocker/insurancerepo:latest
+    image: kunaljadhav1625/insurance-image:latest
     ports:
       - "83:80"
     deploy:
@@ -127,7 +127,7 @@ services:
     volumes:
       - /var/lib/insurance
   loan:
-    image: reyadocker/loanrepo:latest
+    image: kunaljadhav1625/loan-image:latest
     ports:
       - "84:80"
     deploy:
