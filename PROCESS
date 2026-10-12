@@ -59,39 +59,38 @@ INDEX.HTML:
 
 
 PIPELINE:
-pipeline {
+pipeline{
     agent any
     
-    stages {
-        stage('checkout') {
-            steps {
-                git 'https://github.com/ReyazShaik/dockerproject.git'
+    stages{
+        stage('checkout'){
+            steps{
+                git 'https://github.com/devkunaljadhav/dockerproject.git'
             }
         }
-        stage('build') {
-            steps {
+        stage('build'){
+            steps{
                 sh 'docker build -t $image .'
             }
         }
-        stage('tag') {
-            steps {
+        stage('tagging'){
+            steps{
                 sh 'docker tag $image $repo'
             }
         }
-        stage('push') {
-            steps {
-                sh 'docker login -u reyadocker -p $password'
+        stage('push'){
+            steps{
+                sh 'docker login -u kunaljadhav1625 -p $password'
                 sh 'docker push $repo'
             }
         }
-        stage('deploy') {
-            steps {
-                sh 'docker stack deploy bank -c docker-compose.yml'
+        stage('deploy'){
+            steps{
+                sh 'docker stack deploy -c docker-compose.yml bank'
             }
         }
     }
 }
-
 4. GIVE PERMISSIONS
 
 chmod 777 /var/run/docker.sock
